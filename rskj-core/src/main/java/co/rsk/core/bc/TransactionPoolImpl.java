@@ -464,7 +464,7 @@ public class TransactionPoolImpl implements TransactionPool {
         }
 
         AccountState state = repository.getAccountState(tx.getSender());
-        return validator.isValid(tx, bestBlock, state).transactionIsValid();
+        return validator.isValid(tx, bestBlock, state);
     }
 
     /**
