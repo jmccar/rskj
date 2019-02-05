@@ -51,7 +51,7 @@ public class BlockHeaderContractTest {
     private static final BigInteger RSK_DIFFICULTY = new BigInteger("1");
     private static final long DIFFICULTY_TARGET = 562036735;
     private static final String DATA = "80af2871";
-    private static final String BLOCK_HEADER_CONTRACT_ADDRESS = "0000000000000000000000000000000000000000000000000000000001000009";
+    private static final String BLOCK_HEADER_CONTRACT_ADDRESS = "0000000000000000000000000000000000000000000000000000000001000010";
     private static final byte[] ADDITIONAL_TAG = {'A','L','T','B','L','O','C','K',':'};
 
     private TestSystemProperties config;

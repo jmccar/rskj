@@ -59,13 +59,14 @@ public class PrecompiledContracts {
     public static final String BRIDGE_ADDR_STR = "0000000000000000000000000000000001000006";
     public static final String REMASC_ADDR_STR = "0000000000000000000000000000000001000008";
     public static final String BTOUTILS_ADDR_STR = "0000000000000000000000000000000001000009";
+    public static final String BLOCK_HEADER_ADDR_STR = "0000000000000000000000000000000001000010";
 
     public static final RskAddress BRIDGE_ADDR = new RskAddress(BRIDGE_ADDR_STR);
     public static final RskAddress IDENTITY_ADDR = new RskAddress(IDENTITY_ADDR_STR);
     public static final RskAddress REMASC_ADDR = new RskAddress(REMASC_ADDR_STR);
     public static final RskAddress SAMPLE_ADDR = new RskAddress(SAMPLE_ADDR_STR);
     public static final RskAddress BTOUTILS_ADDR = new RskAddress(BTOUTILS_ADDR_STR);
-
+    public static final RskAddress BLOCK_HEADER_ADDR = new RskAddress(BLOCK_HEADER_ADDR_STR);
 
     public static final DataWord BRIDGE_ADDR_DW = new DataWord(BRIDGE_ADDR.getBytes());
     public static final DataWord IDENTITY_ADDR_DW = new DataWord(IDENTITY_ADDR.getBytes());
@@ -76,6 +77,7 @@ public class PrecompiledContracts {
     public static final DataWord BIG_INT_MODEXP_ADDR_DW = new DataWord(BIG_INT_MODEXP_ADDR);
     public static final DataWord SHA256_ADDR_DW = new DataWord(SHA256_ADDR);
     public static final DataWord BTOUTILS_ADDR_DW = new DataWord(BTOUTILS_ADDR.getBytes());
+    public static final DataWord BLOCK_HEADER_ADDR_DW = new DataWord(BLOCK_HEADER_ADDR.getBytes());
 
     private static ECRecover ecRecover = new ECRecover();
     private static Sha256 sha256 = new Sha256();
