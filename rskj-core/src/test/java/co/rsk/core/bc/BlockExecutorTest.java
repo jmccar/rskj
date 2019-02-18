@@ -18,6 +18,7 @@
 
 package co.rsk.core.bc;
 
+import co.rsk.core.SignatureCache;
 import co.rsk.blockchain.utils.BlockGenerator;
 import co.rsk.config.TestSystemProperties;
 import co.rsk.core.Coin;
@@ -87,6 +88,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                new SignatureCache(),
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -129,6 +131,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 listener,
+                new SignatureCache(),
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -201,6 +204,7 @@ public class BlockExecutorTest {
         Assert.assertFalse(Arrays.equals(EMPTY_TRIE_HASH, repository.getRoot()));
 
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
         BlockExecutor executor = new BlockExecutor(repository, (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -211,6 +215,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -285,6 +290,8 @@ public class BlockExecutorTest {
         Block parent = objects.getParent();
         Block block = objects.getBlock();
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(objects.getRepository(), (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -295,6 +302,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -334,6 +342,8 @@ public class BlockExecutorTest {
         Assert.assertFalse(Arrays.equals(EMPTY_TRIE_HASH, repository.getRoot()));
 
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(repository, (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -344,6 +354,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -394,6 +405,8 @@ public class BlockExecutorTest {
         Assert.assertFalse(Arrays.equals(EMPTY_TRIE_HASH, repository.getRoot()));
 
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(repository, (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -404,6 +417,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -440,6 +454,8 @@ public class BlockExecutorTest {
         Block parent = objects.getParent();
         Block block = objects.getBlock();
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(objects.getRepository(), (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -450,6 +466,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -471,6 +488,8 @@ public class BlockExecutorTest {
         Block parent = objects.getParent();
         Block block = objects.getBlock();
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(objects.getRepository(), (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -481,6 +500,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -505,6 +525,8 @@ public class BlockExecutorTest {
         Block parent = objects.getParent();
         Block block = objects.getBlock();
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(objects.getRepository(), (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -515,6 +537,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -539,6 +562,7 @@ public class BlockExecutorTest {
         Block parent = objects.getParent();
         Block block = objects.getBlock();
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
         BlockExecutor executor = new BlockExecutor(objects.getRepository(), (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -549,6 +573,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -572,6 +597,8 @@ public class BlockExecutorTest {
         Block parent = objects.getParent();
         Block block = objects.getBlock();
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(objects.getRepository(), (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -582,6 +609,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -605,6 +633,8 @@ public class BlockExecutorTest {
         Block parent = objects.getParent();
         Block block = objects.getBlock();
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(objects.getRepository(), (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -615,6 +645,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -647,6 +678,8 @@ public class BlockExecutorTest {
         Assert.assertFalse(Arrays.equals(EMPTY_TRIE_HASH, repository.getRoot()));
 
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(repository, (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -657,6 +690,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -731,6 +765,8 @@ public class BlockExecutorTest {
         SimpleEthereumListener listener = new SimpleEthereumListener();
         Block block = objects.getBlock();
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(objects.getRepository(), (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -741,6 +777,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 listener,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -827,6 +864,8 @@ public class BlockExecutorTest {
         Assert.assertFalse(Arrays.equals(EMPTY_TRIE_HASH, repository.getRoot()));
 
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
+        final SignatureCache signatureCache = new SignatureCache();
+
         BlockExecutor executor = new BlockExecutor(repository, (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
                 tx1,
                 txindex1,
@@ -837,6 +876,7 @@ public class BlockExecutorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed1,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
