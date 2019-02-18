@@ -235,26 +235,26 @@ public class WorldDslProcessor {
             final TestSystemProperties config = new TestSystemProperties();
             BlockExecutor executor = new BlockExecutor(world.getRepository(),
                     (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
-                                                               tx1,
-                                                               txindex1,
-                                                               block1.getCoinbase(),
-                                                               track1,
-                    world.getBlockChain().getBlockStore(),
-                    null,
-                    programInvokeFactory,
-                                                               block1,
-                    null,
-                                                               totalGasUsed1,
-                                                               config.getVmConfig(),
-                                                               config.getBlockchainConfig(),
-                                                               config.playVM(),
-                                                               config.isRemascEnabled(),
-                                                               config.vmTrace(),
-                                                               new PrecompiledContracts(config),
-                                                               config.databaseDir(),
-                                                               config.vmTraceDir(),
-                                                               config.vmTraceCompressed()
-                                                       ));
+                         tx1,
+                         txindex1,
+                         block1.getCoinbase(),
+                         track1,
+                         world.getBlockChain().getBlockStore(),
+                        null,
+                        programInvokeFactory, 
+                         block1,
+                        null,
+                        world.getSignatureCache(),
+                        totalGasUsed1,
+                        config.getVmConfig(),
+                        config.getBlockchainConfig(),
+                        config.playVM(),
+                        config.isRemascEnabled(),
+                        config.vmTrace(),
+                        new PrecompiledContracts(config),
+                        config.databaseDir(),
+                        config.vmTraceDir(),
+                        config.vmTraceCompressed()));
             executor.executeAndFill(block, parent);
             world.saveBlock(name, block);
             parent = block;

@@ -69,7 +69,7 @@ public class RemascProcessMinerFeesTest {
     private static RskAddress coinbaseD = TestUtils.randomAddress();
     private static RskAddress coinbaseE = TestUtils.randomAddress();
     private static List<byte[]> accountsAddressesUpToD;
-    private SignatureCache signatureCache = new SignatureCache();
+    private SignatureCache signatureCache;
 
     private Map<byte[], BigInteger> preMineMap = Collections.singletonMap(cowAddress, cowInitialBalance.asBigInteger());
 
@@ -95,6 +95,7 @@ public class RemascProcessMinerFeesTest {
     @Before
     public void setup() {
         blockchainBuilder = new BlockChainBuilder();
+        signatureCache = new SignatureCache();
         blockchainBuilder.setGenesis(genesisBlock).setConfig(config).setTesting(true).setSignatureCache(signatureCache);
     }
 
@@ -626,17 +627,18 @@ public class RemascProcessMinerFeesTest {
                         programInvokeFactory,
                         block,
                         null,
-                        totalGasUsed,
-                        config.getVmConfig(),
-                        config.getBlockchainConfig(),
-                        config.playVM(),
-                        config.isRemascEnabled(),
-                        config.vmTrace(),
-                        new PrecompiledContracts(config),
-                        config.databaseDir(),
-                        config.vmTraceDir(),
-                        config.vmTraceCompressed()
-                ));
+               	 signatureCache,
+       	         totalGasUsed,
+	                 config.getVmConfig(),
+                	 config.getBlockchainConfig(),
+                	 config.playVM(),
+                	 config.isRemascEnabled(),
+                	 config.vmTrace(),
+               	 new PrecompiledContracts(config),
+       	         config.databaseDir(),
+	                 config.vmTraceDir(),
+               	 config.vmTraceCompressed())
+        	 );
 
         for (Block b : blocks) {
             blockExecutor.executeAndFillAll(b, blockchain.getBestBlock());

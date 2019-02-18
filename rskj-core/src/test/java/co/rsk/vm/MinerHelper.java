@@ -96,10 +96,10 @@ public class MinerHelper {
                     track,
                     null,
                     null,
-
                     null,
                     block,
                     new EthereumListenerAdapter(),
+                    signatureCache,
                     totalGasUsed,
                     config.getVmConfig(),
                     config.getBlockchainConfig(),
