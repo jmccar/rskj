@@ -22,6 +22,7 @@ package org.ethereum.core;
 import co.rsk.config.TestSystemProperties;
 import co.rsk.core.BlockDifficulty;
 import co.rsk.core.RskAddress;
+import co.rsk.core.SignatureCache;
 import co.rsk.core.bc.BlockChainImpl;
 import co.rsk.core.bc.BlockExecutor;
 import co.rsk.core.bc.TransactionPoolImpl;
@@ -43,6 +44,7 @@ import org.ethereum.vm.PrecompiledContracts;
 import org.ethereum.vm.program.invoke.ProgramInvokeFactoryImpl;
 
 import java.math.BigInteger;
+import java.security.SignatureException;
 import java.util.HashMap;
 
 /**
@@ -69,7 +71,9 @@ public class ImportLightTest {
         ds.init();
         ReceiptStore receiptStore = new ReceiptStoreImpl(ds);
 
-        TransactionPoolImpl transactionPool = new TransactionPoolImpl(config, repository, null, receiptStore, null, listener, 10, 100);
+        SignatureCache signatureCache = new SignatureCache();
+
+        TransactionPoolImpl transactionPool = new TransactionPoolImpl(config, repository, null, receiptStore, signatureCache, null, listener, 10, 100);
 
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
         BlockChainImpl blockchain = new BlockChainImpl(
@@ -91,6 +95,7 @@ public class ImportLightTest {
                         programInvokeFactory,
                         block1,
                         listener,
+                        signatureCache,
                         totalGasUsed1,
                         config.getVmConfig(),
                         config.getBlockchainConfig(),

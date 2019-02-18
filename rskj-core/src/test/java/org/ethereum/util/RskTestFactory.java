@@ -3,10 +3,7 @@ package org.ethereum.util;
 import co.rsk.blockchain.utils.BlockGenerator;
 import co.rsk.config.RskSystemProperties;
 import co.rsk.config.TestSystemProperties;
-import co.rsk.core.Coin;
-import co.rsk.core.ReversibleTransactionExecutor;
-import co.rsk.core.RskAddress;
-import co.rsk.core.RskImpl;
+import co.rsk.core.*;
 import co.rsk.core.bc.BlockChainImpl;
 import co.rsk.core.bc.BlockExecutor;
 import co.rsk.core.bc.TransactionPoolImpl;
@@ -55,6 +52,7 @@ public class RskTestFactory {
     private RskImpl rskImpl;
     private CompositeEthereumListener compositeEthereumListener;
     private ReceiptStoreImpl receiptStore;
+    private SignatureCache signatureCache;
 
     public RskTestFactory() {
         this(new TestSystemProperties());
@@ -112,6 +110,7 @@ public class RskTestFactory {
                 getProgramInvokeFactory(),
                 getBlockchain().getBestBlock(),
                 new EthereumListenerAdapter(),
+                getSignatureCache(),
                 0,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -161,6 +160,7 @@ public class RskTestFactory {
                             programInvokeFactory1,
                             block,
                             getCompositeEthereumListener(),
+                            getSignatureCache(),
                             totalGasUsed,
                             config.getVmConfig(),
                             config.getBlockchainConfig(),
@@ -213,6 +213,7 @@ public class RskTestFactory {
                     getBlockStore(),
                     getReceiptStore(),
                     getCompositeEthereumListener(),
+                    getSignatureCache(),
                     getProgramInvokeFactory(),
                     getRepository(),
                     config
@@ -243,6 +244,14 @@ public class RskTestFactory {
         }
 
         return reversibleTransactionExecutor;
+    }
+
+    public SignatureCache getSignatureCache() {
+        if (signatureCache == null) {
+            this.signatureCache = new SignatureCache();
+        }
+
+        return signatureCache;
     }
 
     public RskImpl getRskImpl() {
