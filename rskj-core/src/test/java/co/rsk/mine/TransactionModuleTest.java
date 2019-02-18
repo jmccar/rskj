@@ -18,6 +18,7 @@
 
 package co.rsk.mine;
 
+import co.rsk.core.SignatureCache;
 import co.rsk.config.ConfigUtils;
 import co.rsk.config.TestSystemProperties;
 import co.rsk.core.*;
@@ -80,9 +81,10 @@ public class TransactionModuleTest {
 
         BlockStore blockStore = world.getBlockChain().getBlockStore();
 
-        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, null, null, null, 10, 100);
+        SignatureCache signatureCache = world.getSignatureCache();
+        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, null, signatureCache, null, null, 10, 100);
 
-        Web3Impl web3 = createEnvironment(blockchain, null, repository, transactionPool, blockStore, false);
+        Web3Impl web3 = createEnvironment(blockchain, null, repository, transactionPool, blockStore, signatureCache, false);
 
         String tx = sendTransaction(web3, repository);
 
@@ -103,9 +105,10 @@ public class TransactionModuleTest {
 
         BlockStore blockStore = world.getBlockChain().getBlockStore();
 
-        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, null, null, null, 10, 100);
+        SignatureCache signatureCache = world.getSignatureCache();
+        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, null, signatureCache, null, null, 10, 100);
 
-        Web3Impl web3 = createEnvironment(blockchain, null, repository, transactionPool, blockStore, true);
+        Web3Impl web3 = createEnvironment(blockchain, null, repository, transactionPool, blockStore, signatureCache, true);
 
         String tx = sendTransaction(web3, repository);
 
@@ -132,9 +135,10 @@ public class TransactionModuleTest {
 
         BlockStore blockStore = world.getBlockChain().getBlockStore();
 
-        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, receiptStore, null, null, 10, 100);
+        SignatureCache signatureCache = world.getSignatureCache();
+        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, receiptStore, signatureCache, null, null, 10, 100);
 
-        Web3Impl web3 = createEnvironment(blockchain, receiptStore, repository, transactionPool, blockStore, true);
+        Web3Impl web3 = createEnvironment(blockchain, receiptStore, repository, transactionPool, blockStore, signatureCache, true);
 
         for (int i = 1; i < 100; i++) {
             String tx = sendTransaction(web3, repository);
@@ -157,9 +161,10 @@ public class TransactionModuleTest {
 
         BlockStore blockStore = world.getBlockChain().getBlockStore();
 
-        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, receiptStore, null, null, 10, 100);
+        SignatureCache signatureCache = world.getSignatureCache();
+        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, receiptStore, signatureCache, null, null, 10, 100);
 
-        Web3Impl web3 = createEnvironment(blockchain, receiptStore, repository, transactionPool, blockStore, true);
+        Web3Impl web3 = createEnvironment(blockchain, receiptStore, repository, transactionPool, blockStore, signatureCache, true);
 
         String txHash = sendRawTransaction(web3);
 
@@ -183,9 +188,10 @@ public class TransactionModuleTest {
 
         BlockStore blockStore = world.getBlockChain().getBlockStore();
 
-        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, receiptStore, null, null, 10, 100);
+        SignatureCache signatureCache = world.getSignatureCache();
+        TransactionPool transactionPool = new TransactionPoolImpl(config, repository, blockStore, receiptStore, signatureCache, null, null, 10, 100);
 
-        Web3Impl web3 = createEnvironment(blockchain, receiptStore, repository, transactionPool, blockStore, false);
+        Web3Impl web3 = createEnvironment(blockchain, receiptStore, repository, transactionPool, blockStore, signatureCache, false);
 
         String txHash = sendRawTransaction(web3);
 
@@ -251,7 +257,7 @@ public class TransactionModuleTest {
         return args;
     }
 
-    private Web3Impl createEnvironment(BlockChainImpl blockchain, ReceiptStore receiptStore, Repository repository, TransactionPool transactionPool, BlockStore blockStore, boolean mineInstant) {
+    private Web3Impl createEnvironment(BlockChainImpl blockchain, ReceiptStore receiptStore, Repository repository, TransactionPool transactionPool, BlockStore blockStore, SignatureCache signatureCache, boolean mineInstant) {
 
         ConfigCapabilities configCapabilities = new SimpleConfigCapabilities();
         CompositeEthereumListener compositeEthereumListener = new CompositeEthereumListener();
@@ -274,7 +280,10 @@ public class TransactionModuleTest {
                         Mockito.mock(BlockUnclesValidationRule.class),
                         config,
                         receiptStore,
-                        minerClock
+                        minerClock,
+                        signatureCache
+
+
                 ),
                 minerClock,
                 ConfigUtils.getDefaultMiningConfig()

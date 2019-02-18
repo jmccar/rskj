@@ -18,6 +18,7 @@
 
 package co.rsk.mine;
 
+import co.rsk.core.SignatureCache;
 import co.rsk.TestHelpers.Tx;
 import co.rsk.bitcoinj.core.*;
 import co.rsk.bitcoinj.params.RegTestParams;
@@ -122,7 +123,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -163,7 +165,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -228,7 +231,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -278,7 +282,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -331,7 +336,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -391,7 +397,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -443,7 +450,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -500,7 +508,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -539,7 +548,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -578,7 +588,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -621,7 +632,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                         unclesValidationRule,
                         config,
                         null,
-                        clock
+                        clock,
+                        new SignatureCache()
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
@@ -707,7 +719,8 @@ public class MinerServerTest extends ParameterizedNetworkUpgradeTest {
                 Mockito.mock(BlockValidationRule.class),
                 config,
                 Mockito.mock(ReceiptStore.class),
-                Mockito.mock(MinerClock.class)
+                Mockito.mock(MinerClock.class),
+                new SignatureCache()
         );
     }
 }

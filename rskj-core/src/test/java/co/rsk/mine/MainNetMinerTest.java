@@ -1,5 +1,6 @@
 package co.rsk.mine;
 
+import co.rsk.core.SignatureCache;
 import co.rsk.bitcoinj.core.NetworkParameters;
 import co.rsk.config.ConfigUtils;
 import co.rsk.config.TestSystemProperties;
@@ -45,6 +46,7 @@ public class MainNetMinerTest {
     private BlockStore blockStore;
     private NodeBlockProcessor blockProcessor;
     private Repository repository;
+    private SignatureCache signatureCache;
 
     @Before
     public void setup() {
@@ -56,6 +58,7 @@ public class MainNetMinerTest {
         blockStore = factory.getBlockStore();
         blockProcessor = factory.getBlockProcessor();
         repository = factory.getRepository();
+        signatureCache = factory.getSignatureCache();
     }
 
     /*
@@ -66,7 +69,7 @@ public class MainNetMinerTest {
     @Test
     public void submitBitcoinBlockProofOfWorkNotGoodEnough() {
         /* We need a low target */
-        BlockChainImpl blockchain = new BlockChainBuilder().build();
+        BlockChainImpl blockchain = new BlockChainBuilder().setSignatureCache(signatureCache).build();
         Genesis gen = (Genesis) BlockChainImplTest.getGenesisBlock(blockchain);
         gen.getHeader().setDifficulty(new BlockDifficulty(BigInteger.valueOf(Long.MAX_VALUE)));
         blockchain.setStatus(gen, gen.getCumulativeDifficulty());
@@ -204,7 +207,8 @@ public class MainNetMinerTest {
                 unclesValidationRule,
                 config,
                 null,
-                clock
+                clock,
+                signatureCache
         );
     }
 }

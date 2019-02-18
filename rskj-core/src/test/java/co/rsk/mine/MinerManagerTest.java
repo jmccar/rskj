@@ -18,6 +18,7 @@
 
 package co.rsk.mine;
 
+import co.rsk.core.SignatureCache;
 import co.rsk.config.ConfigUtils;
 import co.rsk.config.TestSystemProperties;
 import co.rsk.core.DifficultyCalculator;
@@ -53,6 +54,7 @@ public class MinerManagerTest {
     private TransactionPool transactionPool;
     private Repository repository;
     private BlockStore blockStore;
+    private SignatureCache signatureCache;
 
     @Before
     public void setup() {
@@ -61,6 +63,7 @@ public class MinerManagerTest {
         transactionPool = factory.getTransactionPool();
         repository = factory.getRepository();
         blockStore = factory.getBlockStore();
+        signatureCache = factory.getSignatureCache();
     }
 
     @Test
@@ -310,7 +313,8 @@ public class MinerManagerTest {
                         new BlockValidationRuleDummy(),
                         config,
                         null,
-                        clock
+                        clock,
+                        signatureCache
                 ),
                 clock,
                 ConfigUtils.getDefaultMiningConfig()
