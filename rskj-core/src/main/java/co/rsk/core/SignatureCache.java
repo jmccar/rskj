@@ -60,7 +60,9 @@ public class SignatureCache {
             txFromBroadcastToBlock(key, senderAddr);
         } else {
             senderAddr = computeTxSender(rawHashBytes, signature);
-            if(!senderAddr.equals(RskAddress.nullAddress())) sendersByTxOnBlock.put(key,senderAddr);
+            if (!senderAddr.equals(RskAddress.nullAddress())) {
+                sendersByTxOnBlock.put(key,senderAddr);
+            }
         }
         return senderAddr;
     }
@@ -105,8 +107,7 @@ public class SignatureCache {
 
     private RskAddress getTxSender(byte[] rawHashBytes, ECKey.ECDSASignature signature) throws SignatureException {
         ECKey senderKey = ECKey.signatureToKey(rawHashBytes, signature);
-        RskAddress senderAddr = new RskAddress(senderKey.getAddress());
-        return senderAddr;
+        return new RskAddress(senderKey.getAddress());
     }
 
     private ByteArrayWrapper getKey(byte[] rawHashBytes, ECKey.ECDSASignature signature) {
