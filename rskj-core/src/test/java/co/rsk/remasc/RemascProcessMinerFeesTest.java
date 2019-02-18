@@ -18,6 +18,7 @@
 
 package co.rsk.remasc;
 
+import co.rsk.core.SignatureCache;
 import co.rsk.blockchain.utils.BlockGenerator;
 import co.rsk.config.RemascConfig;
 import co.rsk.config.RemascConfigFactory;
@@ -68,6 +69,7 @@ public class RemascProcessMinerFeesTest {
     private static RskAddress coinbaseD = TestUtils.randomAddress();
     private static RskAddress coinbaseE = TestUtils.randomAddress();
     private static List<byte[]> accountsAddressesUpToD;
+    private SignatureCache signatureCache = new SignatureCache();
 
     private Map<byte[], BigInteger> preMineMap = Collections.singletonMap(cowAddress, cowInitialBalance.asBigInteger());
 
@@ -93,7 +95,7 @@ public class RemascProcessMinerFeesTest {
     @Before
     public void setup() {
         blockchainBuilder = new BlockChainBuilder();
-        blockchainBuilder.setGenesis(genesisBlock).setConfig(config).setTesting(true);
+        blockchainBuilder.setGenesis(genesisBlock).setConfig(config).setTesting(true).setSignatureCache(signatureCache);
     }
 
     @Test
@@ -128,6 +130,7 @@ public class RemascProcessMinerFeesTest {
                 programInvokeFactory,
                 block,
                 null,
+                signatureCache,
                 totalGasUsed,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -191,6 +194,7 @@ public class RemascProcessMinerFeesTest {
                 programInvokeFactory,
                 block,
                 null,
+                signatureCache,
                 totalGasUsed,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -269,6 +273,7 @@ public class RemascProcessMinerFeesTest {
                 programInvokeFactory,
                 block,
                 null,
+                signatureCache,
                 totalGasUsed,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -389,6 +394,7 @@ public class RemascProcessMinerFeesTest {
                         programInvokeFactory,
                         block,
                         null,
+                        signatureCache,
                         totalGasUsed,
                         config.getVmConfig(),
                         config.getBlockchainConfig(),
@@ -524,6 +530,7 @@ public class RemascProcessMinerFeesTest {
                 programInvokeFactory,
                 block,
                 null,
+                signatureCache,
                 totalGasUsed,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -722,6 +729,7 @@ public class RemascProcessMinerFeesTest {
                 programInvokeFactory,
                 block,
                 null,
+                signatureCache,
                 totalGasUsed,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
@@ -806,6 +814,7 @@ public class RemascProcessMinerFeesTest {
                 programInvokeFactory,
                 block,
                 null,
+                signatureCache,
                 totalGasUsed,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),

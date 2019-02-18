@@ -18,6 +18,7 @@
 
 package co.rsk.test.builders;
 
+import co.rsk.core.SignatureCache;
 import co.rsk.blockchain.utils.BlockGenerator;
 import co.rsk.config.TestSystemProperties;
 import co.rsk.core.bc.BlockChainImpl;
@@ -46,6 +47,7 @@ public class BlockBuilder {
     private List<BlockHeader> uncles;
     private BigInteger minGasPrice;
     private byte[] gasLimit;
+    private SignatureCache signatureCache;
 
     public BlockBuilder() {
         this.blockGenerator = new BlockGenerator();
@@ -92,6 +94,11 @@ public class BlockBuilder {
         return this;
     }
 
+    public BlockBuilder signatureCache(SignatureCache signatureCache) {
+        this.signatureCache = signatureCache;
+        return this;
+    }
+
     /**
      * This has to be called after .parent() in order to have any effect
      */
@@ -116,6 +123,7 @@ public class BlockBuilder {
                     programInvokeFactory,
                     block1,
                     null,
+                    signatureCache,
                     totalGasUsed1,
                     config.getVmConfig(),
                     config.getBlockchainConfig(),

@@ -18,6 +18,7 @@
 
 package co.rsk.remasc;
 
+import co.rsk.core.SignatureCache;
 import co.rsk.blockchain.utils.BlockGenerator;
 import co.rsk.config.RskSystemProperties;
 import co.rsk.config.TestSystemProperties;
@@ -637,9 +638,10 @@ public class RemascStorageProviderTest {
         long gasPrice = 10L;
         long lowGasPrice = 1L;
         long minerFee = 21000;
+        SignatureCache signatureCache = new SignatureCache();
 
         RskAddress coinbase = randomAddress();
-        BlockChainBuilder builder = new BlockChainBuilder().setTesting(true).setGenesis(genesisBlock).setConfig(config);
+        BlockChainBuilder builder = new BlockChainBuilder().setTesting(true).setGenesis(genesisBlock).setConfig(config).setSignatureCache(signatureCache);
 
         RemascTestRunner testRunner = new RemascTestRunner(builder, this.genesisBlock).txValue(txValue).minerFee(minerFee)
                 .initialHeight(13).siblingElements(new ArrayList<>()).txSigningKey(this.cowKey).gasPrice(gasPrice);
@@ -671,6 +673,7 @@ public class RemascStorageProviderTest {
                 programInvokeFactory,
                 block,
                 null,
+                signatureCache,
                 totalGasUsed,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),

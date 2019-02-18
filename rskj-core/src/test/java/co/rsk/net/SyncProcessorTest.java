@@ -1,5 +1,6 @@
 package co.rsk.net;
 
+import co.rsk.core.SignatureCache;
 import co.rsk.blockchain.utils.BlockGenerator;
 import co.rsk.config.TestSystemProperties;
 import co.rsk.core.BlockDifficulty;
@@ -662,6 +663,7 @@ public class SyncProcessorTest {
         txs.add(tx);
 
         Block block = new BlockGenerator().createChildBlock(genesis, txs, blockchain.getRepository().getRoot());
+        SignatureCache signatureCache = new SignatureCache();
 
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
         BlockExecutor blockExecutor = new BlockExecutor(blockchain.getRepository(), (tx1, txindex, coinbase, repository, block1, totalGasUsed) -> new TransactionExecutor(
@@ -674,6 +676,7 @@ public class SyncProcessorTest {
                 programInvokeFactory,
                 block1,
                 null,
+                signatureCache,
                 totalGasUsed,
                 config.getVmConfig(),
                 config.getBlockchainConfig(),
