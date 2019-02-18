@@ -263,6 +263,7 @@ public class RskFactory {
     public TransactionPool getTransactionPool(org.ethereum.db.BlockStore blockStore,
                                         ReceiptStore receiptStore,
                                         org.ethereum.core.Repository repository,
+                                        SignatureCache signatureCache,
                                         RskSystemProperties config,
                                         ProgramInvokeFactory programInvokeFactory,
                                         CompositeEthereumListener listener) {
@@ -270,10 +271,10 @@ public class RskFactory {
                 blockStore,
                 receiptStore,
                 listener,
+                signatureCache,
                 programInvokeFactory,
                 repository,
-                config
-        );
+                config);
     }
 
     @Bean
