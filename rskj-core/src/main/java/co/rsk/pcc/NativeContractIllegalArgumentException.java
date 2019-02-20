@@ -1,7 +1,6 @@
 /*
  * This file is part of RskJ
- * Copyright (C) 2018 RSK Labs Ltd.
- * (derived from ethereumJ library, Copyright (c) 2016 <ether.camp>)
+ * Copyright (C) 2019 RSK Labs Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -17,26 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ethereum.config.blockchain.regtest;
+package co.rsk.pcc;
 
-public class RegTestSecondForkConfig extends RegTestOrchidConfig {
-    @Override
-    public boolean isRfs122() {
-        return true;
+/**
+ * Any native contract illegal argument exceptions should be an instance of this class.
+ *
+ * @author Ariel Mendelzon
+ */
+public class NativeContractIllegalArgumentException extends IllegalArgumentException {
+    public NativeContractIllegalArgumentException(String s) {
+        super(s);
     }
 
-    @Override
-    public boolean isRskipGetBtcTransactionConfirmations() {
-        return true;
-    }
-
-    @Override
-    public boolean isRskipMultipleKeyFederateMembers() {
-        return true;
-    }
-
-    @Override
-    public boolean isRskip106() {
-        return true;
+    public NativeContractIllegalArgumentException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
