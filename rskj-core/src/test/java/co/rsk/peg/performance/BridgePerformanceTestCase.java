@@ -28,7 +28,7 @@ import co.rsk.peg.Bridge;
 import co.rsk.peg.BridgeStorageConfiguration;
 import co.rsk.peg.BridgeStorageProvider;
 import co.rsk.test.builders.BlockChainBuilder;
-import co.rsk.trie.TrieImpl;
+import co.rsk.trie.Trie;
 import org.ethereum.core.Blockchain;
 import org.ethereum.core.Repository;
 import org.ethereum.core.Transaction;
@@ -156,7 +156,7 @@ public abstract class BridgePerformanceTestCase extends PrecompiledContractPerfo
 
             private RepositoryImpl createRepositoryImpl(RskSystemProperties config) {
                 return new RepositoryImpl(
-                        new TrieImpl(null, true),
+                        new Trie(null, true),
                         new HashMapDB(),
                         new TrieStorePoolOnMemory(),
                         config.detailsInMemoryStorageLimit()

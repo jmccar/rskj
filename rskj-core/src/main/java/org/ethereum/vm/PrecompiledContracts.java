@@ -110,6 +110,9 @@ public class PrecompiledContracts {
         if (address.equals(IDENTITY_ADDR_DW)) {
             return identity;
         }
+        if (address.equals(BLOCK_HEADER_ADDR_DW)) {
+            return new co.rsk.pcc.blockheader.BlockHeaderContract(config, BLOCK_HEADER_ADDR);
+        }
         // RSKIP-93 removes this contract completely
         if (address.equals(SAMPLE_ADDR_DW) && !blockchainConfig.isRskip93()) {
             return sample;

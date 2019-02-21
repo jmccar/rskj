@@ -23,6 +23,7 @@ import co.rsk.config.VmConfig;
 import co.rsk.core.Coin;
 import co.rsk.core.RskAddress;
 import co.rsk.pcc.NativeContract;
+import co.rsk.pcc.blockheader.BlockHeaderContract;
 import co.rsk.peg.Bridge;
 import co.rsk.remasc.RemascContract;
 import co.rsk.vm.BitSet;
@@ -50,7 +51,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ArrayUtils.*;
