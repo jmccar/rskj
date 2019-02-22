@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import static org.ethereum.util.ByteUtil.bigIntegerToBytes;
+
 
 @Component
 public class SignatureCache {
@@ -121,6 +123,8 @@ public class SignatureCache {
     }
 
     private byte[] getRsvArray(ECKey.ECDSASignature signature) {
-        return ByteUtil.appendByte(ByteUtil.merge(signature.r.toByteArray(), signature.s.toByteArray()), signature.v);
+        byte[] rArray = bigIntegerToBytes(signature.r,32);
+        byte[] sArray = bigIntegerToBytes(signature.s,32);
+        return ByteUtil.appendByte(ByteUtil.merge(rArray, sArray), signature.v);
     }
 }
