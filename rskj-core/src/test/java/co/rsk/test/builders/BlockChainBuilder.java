@@ -27,6 +27,7 @@ import co.rsk.core.bc.*;
 import co.rsk.db.RepositoryImpl;
 import co.rsk.db.TrieStorePoolOnMemory;
 import co.rsk.peg.RepositoryBlockStore;
+import co.rsk.trie.TrieImpl;
 import co.rsk.trie.TrieStoreImpl;
 import co.rsk.validators.BlockValidator;
 import co.rsk.validators.DummyBlockValidator;
@@ -42,6 +43,7 @@ import org.junit.Assert;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ajlopez on 8/6/2016.
@@ -108,16 +110,12 @@ public class BlockChainBuilder {
     }
 
     public BlockChainImpl build() {
-        return build(false);
-    }
-
-    public BlockChainImpl build(boolean withoutCleaner) {
         if (config == null){
             config = new TestSystemProperties();
         }
 
         if (repository == null)
-            repository = new RepositoryImpl(new TrieStoreImpl(new HashMapDB().setClearOnClose(false)), new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
+            repository = new RepositoryImpl(new TrieImpl(new TrieStoreImpl(new HashMapDB().setClearOnClose(false)), true), new HashMapDB(), new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
 
         if (blockStore == null) {
             blockStore = new IndexedBlockStore(new HashMap<>(), new HashMapDB(), null);
@@ -144,12 +142,7 @@ public class BlockChainBuilder {
 
         BlockValidator blockValidator = validatorBuilder.build();
 
-        TransactionPoolImpl transactionPool;
-        if (withoutCleaner) {
-            transactionPool = new TransactionPoolImplNoCleaner(config, this.repository, this.blockStore, receiptStore, new ProgramInvokeFactoryImpl(), new TestCompositeEthereumListener(), 10, 100);
-        } else {
-            transactionPool = new TransactionPoolImpl(config, this.repository, this.blockStore, receiptStore, new ProgramInvokeFactoryImpl(), new TestCompositeEthereumListener(), 10, 100);
-        }
+        TransactionPoolImpl transactionPool = new TransactionPoolImpl(config, this.repository, this.blockStore, receiptStore, new ProgramInvokeFactoryImpl(), new TestCompositeEthereumListener(), 10, 100);
 
         final ProgramInvokeFactoryImpl programInvokeFactory = new ProgramInvokeFactoryImpl();
         BlockChainImpl blockChain = new BlockChainImpl(this.repository, this.blockStore, receiptStore, transactionPool, listener, blockValidator, false, 1, new BlockExecutor(this.repository, (tx1, txindex1, coinbase, track1, block1, totalGasUsed1) -> new TransactionExecutor(
@@ -180,9 +173,10 @@ public class BlockChainBuilder {
         }
 
         if (this.genesis != null) {
-            for (RskAddress addr : this.genesis.getPremine().keySet()) {
-                this.repository.createAccount(addr);
-                this.repository.addBalance(addr, this.genesis.getPremine().get(addr).getAccountState().getBalance());
+            for (Map.Entry<RskAddress, AccountState> accountsEntry : genesis.getAccounts().entrySet()) {
+                RskAddress accountAddress = accountsEntry.getKey();
+                repository.createAccount(accountAddress);
+                repository.addBalance(accountAddress, accountsEntry.getValue().getBalance());
             }
 
             Repository track = this.repository.startTracking();
@@ -191,9 +185,7 @@ public class BlockChainBuilder {
 
             this.genesis.setStateRoot(this.repository.getRoot());
             this.genesis.flushRLP();
-            blockChain.setBestBlock(this.genesis);
-
-            blockChain.setTotalDifficulty(this.genesis.getCumulativeDifficulty());
+            blockChain.setStatus(this.genesis, this.genesis.getCumulativeDifficulty());
         }
 
         if (this.blocks != null) {
@@ -229,29 +221,17 @@ public class BlockChainBuilder {
         return blockChain;
     }
 
-    public static Blockchain ofSizeWithNoTransactionPoolCleaner(int size) {
-        return ofSize(size, false, true);
-    }
-
     public static Blockchain ofSize(int size) {
-        return ofSize(size, false, false);
+        return ofSize(size, false);
     }
 
     public static Blockchain ofSize(int size, boolean mining) {
-        return ofSize(size, mining, null, null, false);
-    }
-
-    public static Blockchain ofSize(int size, boolean mining, boolean withoutCleaner) {
-        return ofSize(size, mining, null, null, withoutCleaner);
+        return ofSize(size, mining, null, null);
     }
 
     public static Blockchain ofSize(int size, boolean mining, List<Account> accounts, List<Coin> balances) {
-        return ofSize(size, mining, accounts, balances, false);
-    }
-
-    public static Blockchain ofSize(int size, boolean mining, List<Account> accounts, List<Coin> balances, boolean withoutCleaner) {
         BlockChainBuilder builder = new BlockChainBuilder();
-        BlockChainImpl blockChain = builder.build(withoutCleaner);
+        BlockChainImpl blockChain = builder.build();
 
         BlockGenerator blockGenerator = new BlockGenerator();
         Block genesis = blockGenerator.getGenesisBlock();

@@ -1,6 +1,6 @@
 /*
  * This file is part of RskJ
- * Copyright (C) 2017 RSK Labs Ltd.
+ * Copyright (C) 2019 RSK Labs Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,13 +16,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package co.rsk.trie;
+package co.rsk.peg.performance;
 
-/**
- * Created by ajlopez on 21/04/2017.
- */
-public class TrieSerializationException extends RuntimeException {
-    public TrieSerializationException(String message, Exception ex) {
-        super(message, ex);
-    }
+import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        IdentityPerformanceTestCase.class,
+})
+@Ignore
+public class IdentityPerformanceTest extends PrecompiledContractPerformanceTest {
 }

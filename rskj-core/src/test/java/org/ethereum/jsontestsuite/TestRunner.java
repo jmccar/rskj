@@ -29,7 +29,7 @@ import co.rsk.core.bc.BlockExecutor;
 import co.rsk.core.bc.TransactionPoolImpl;
 import co.rsk.db.RepositoryImpl;
 import co.rsk.db.TrieStorePoolOnMemory;
-import co.rsk.trie.TrieStoreImpl;
+import co.rsk.trie.TrieImpl;
 import co.rsk.validators.DummyBlockValidator;
 import org.ethereum.config.BlockchainConfig;
 import org.ethereum.core.Block;
@@ -144,9 +144,7 @@ public class TestRunner {
         )));
 
         blockchain.setNoValidation(true);
-
-        blockchain.setBestBlock(genesis);
-        blockchain.setTotalDifficulty(genesis.getCumulativeDifficulty());
+        blockchain.setStatus(genesis, genesis.getCumulativeDifficulty());
 
         /* 2 */ // Create block traffic list
         List<Block> blockTraffic = new ArrayList<>();
@@ -367,10 +365,9 @@ public class TestRunner {
                     for (DataWord storageKey : storage.keySet()) {
                         byte[] expectedStValue = storage.get(storageKey).getData();
 
-                        ContractDetails contractDetails =
-                                program.getStorage().getContractDetails(accountState.getAddress());
+                        RskAddress accountAddress = accountState.getAddress();
 
-                        if (contractDetails == null) {
+                        if (!program.getStorage().isContract(accountAddress)) {
                             String output =
                                     String.format("Storage raw doesn't exist: key [ %s ], expectedValue: [ %s ]",
                                             Hex.toHexString(storageKey.getData()),
@@ -383,8 +380,7 @@ public class TestRunner {
                             continue;
                         }
 
-                        Map<DataWord, DataWord> testStorage = contractDetails.getStorage();
-                        DataWord actualValue = testStorage.get(new DataWord(storageKey.getData()));
+                        DataWord actualValue = program.getStorage().getStorageValue(accountAddress, storageKey);
 
                         if (actualValue == null ||
                                 !Arrays.equals(expectedStValue, actualValue.getData())) {
@@ -636,6 +632,6 @@ public class TestRunner {
     }
 
     public static RepositoryImpl createRepositoryImpl(RskSystemProperties config) {
-        return new RepositoryImpl(null, new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
+        return new RepositoryImpl(new TrieImpl(null, true), new HashMapDB(), new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
     }
 }

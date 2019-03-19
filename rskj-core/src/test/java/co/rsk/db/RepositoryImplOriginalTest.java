@@ -23,13 +23,15 @@ import co.rsk.config.RskSystemProperties;
 import co.rsk.config.TestSystemProperties;
 import co.rsk.core.Coin;
 import co.rsk.core.RskAddress;
+import co.rsk.trie.TrieImpl;
 import co.rsk.trie.TrieStore;
 import co.rsk.trie.TrieStoreImpl;
+import org.ethereum.core.AccountState;
 import org.ethereum.core.Genesis;
 import org.ethereum.core.Repository;
 import org.ethereum.crypto.HashUtil;
 import org.ethereum.datasource.HashMapDB;
-import org.ethereum.db.ContractDetails;
+import org.ethereum.util.RskTestFactory;
 import org.ethereum.vm.DataWord;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -38,10 +40,13 @@ import org.junit.runners.MethodSorters;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.math.BigInteger;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.ethereum.util.ByteUtil.EMPTY_BYTE_ARRAY;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 
 /**
@@ -346,16 +351,17 @@ public class RepositoryImplOriginalTest {
         Repository repository = createRepositoryImpl(config);
         Repository track = repository.startTracking();
 
-        Genesis genesis = (Genesis)Genesis.getInstance(config);
-        for (RskAddress addr : genesis.getPremine().keySet()) {
-            repository.createAccount(addr);
-            repository.addBalance(addr, genesis.getPremine().get(addr).getAccountState().getBalance());
+        Genesis genesis = RskTestFactory.getGenesisInstance(config);
+        for (Map.Entry<RskAddress, AccountState> accountsEntry : genesis.getAccounts().entrySet()) {
+            RskAddress accountAddress = accountsEntry.getKey();
+            repository.createAccount(accountAddress);
+            repository.addBalance(accountAddress, accountsEntry.getValue().getBalance());
         }
 
         track.commit();
 
         // To Review: config Genesis should have an State Root according to the new trie algorithm
-        // assertArrayEquals(Genesis.getInstance(SystemProperties.CONFIG).getStateRoot(), repository.getRoot());
+        // assertArrayEquals(Genesis.getGenesisInstance(SystemProperties.CONFIG).getStateRoot(), repository.getRoot());
     }
 
     @Test
@@ -711,29 +717,20 @@ public class RepositoryImplOriginalTest {
         track2.addStorageRow(HORSE, horseKey1, horseVal0);
         Repository track3 = track2.startTracking();
 
-        ContractDetails cowDetails = track3.getContractDetails(COW);
-        cowDetails.put(cowKey1, cowVal1);
-
-        ContractDetails horseDetails = track3.getContractDetails(HORSE);
-        horseDetails.put(horseKey1, horseVal1);
+        track3.addStorageRow(COW, cowKey1, cowVal1);
+        track3.addStorageRow(HORSE, horseKey1, horseVal1);
 
         track3.commit();
         track2.rollback();
 
-        ContractDetails cowDetailsOrigin = repository.getContractDetails(COW);
-        DataWord cowValOrin = cowDetailsOrigin.get(cowKey1);
-
-        ContractDetails horseDetailsOrigin = repository.getContractDetails(HORSE);
-        DataWord horseValOrin = horseDetailsOrigin.get(horseKey1);
-
-        assertEquals(cowVal0, cowValOrin);
-        assertEquals(horseVal0, horseValOrin);
+        assertThat(repository.getStorageValue(COW, cowKey1), is(cowVal0));
+        assertThat(repository.getStorageValue(HORSE, horseKey1), is(horseVal0));
     }
 
     @Test // testing for snapshot
     public void test20() {
         TrieStore store = new TrieStoreImpl(new HashMapDB());
-        Repository repository = new RepositoryImpl(store, new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
+        Repository repository = new RepositoryImpl(new TrieImpl(store, true), new HashMapDB(), new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
         byte[] root = repository.getRoot();
 
         DataWord cowKey1 = new DataWord("c1");
@@ -761,28 +758,22 @@ public class RepositoryImplOriginalTest {
         byte[] root3 = repository.getRoot();
 
         Repository snapshot = repository.getSnapshotTo(root);
-        ContractDetails cowDetails = snapshot.getContractDetails(COW);
-        ContractDetails horseDetails = snapshot.getContractDetails(HORSE);
-        assertEquals(null, cowDetails.get(cowKey1) );
-        assertEquals(null, cowDetails.get(cowKey2) );
-        assertEquals(null, horseDetails.get(horseKey1) );
-        assertEquals(null, horseDetails.get(horseKey2) );
+        assertThat(snapshot.getStorageValue(COW, cowKey1), is(nullValue()));
+        assertThat(snapshot.getStorageValue(COW, cowKey2), is(nullValue()));
+        assertThat(snapshot.getStorageValue(HORSE, horseKey1), is(nullValue()));
+        assertThat(snapshot.getStorageValue(HORSE, horseKey2), is(nullValue()));
 
         snapshot = repository.getSnapshotTo(root2);
-        cowDetails = snapshot.getContractDetails(COW);
-        horseDetails = snapshot.getContractDetails(HORSE);
-        assertEquals(cowVal1, cowDetails.get(cowKey1));
-        assertEquals(null, cowDetails.get(cowKey2));
-        assertEquals(horseVal1, horseDetails.get(horseKey1) );
-        assertEquals(null, horseDetails.get(horseKey2) );
+        assertThat(snapshot.getStorageValue(COW, cowKey1), is(cowVal1));
+        assertThat(snapshot.getStorageValue(COW, cowKey2), is(nullValue()));
+        assertThat(snapshot.getStorageValue(HORSE, horseKey1), is(horseVal1));
+        assertThat(snapshot.getStorageValue(HORSE, horseKey2), is(nullValue()));
 
         snapshot = repository.getSnapshotTo(root3);
-        cowDetails = snapshot.getContractDetails(COW);
-        horseDetails = snapshot.getContractDetails(HORSE);
-        assertEquals(cowVal1, cowDetails.get(cowKey1));
-        assertEquals(cowVal0, cowDetails.get(cowKey2));
-        assertEquals(horseVal1, horseDetails.get(horseKey1) );
-        assertEquals(horseVal0, horseDetails.get(horseKey2) );
+        assertThat(snapshot.getStorageValue(COW, cowKey1), is(cowVal1));
+        assertThat(snapshot.getStorageValue(COW, cowKey2), is(cowVal0));
+        assertThat(snapshot.getStorageValue(HORSE, horseKey1), is(horseVal1));
+        assertThat(snapshot.getStorageValue(HORSE, horseKey2), is(horseVal0));
     }
 
     private boolean running = true;
@@ -790,7 +781,7 @@ public class RepositoryImplOriginalTest {
     @Test // testing for snapshot
     public void testMultiThread() throws InterruptedException {
         TrieStore store = new TrieStoreImpl(new HashMapDB());
-        final Repository repository = new RepositoryImpl(store, new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
+        final Repository repository = new RepositoryImpl(new TrieImpl(store, true), new HashMapDB(), new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
 
         final DataWord cowKey1 = new DataWord("c1");
         final DataWord cowKey2 = new DataWord("c2");
@@ -800,8 +791,7 @@ public class RepositoryImplOriginalTest {
         track2.addStorageRow(COW, cowKey2, cowVal0);
         track2.commit();
 
-        ContractDetails cowDetails = repository.getContractDetails(COW);
-        assertEquals(cowVal0, cowDetails.get(cowKey2));
+        assertThat(repository.getStorageValue(COW, cowKey2), is(cowVal0));
 
         final CountDownLatch failSema = new CountDownLatch(1);
 
@@ -858,6 +848,6 @@ public class RepositoryImplOriginalTest {
     }
 
     public static RepositoryImpl createRepositoryImpl(RskSystemProperties config) {
-        return new RepositoryImpl(null, new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
+        return new RepositoryImpl(new TrieImpl(null, true), new HashMapDB(), new TrieStorePoolOnMemory(), config.detailsInMemoryStorageLimit());
     }
 }

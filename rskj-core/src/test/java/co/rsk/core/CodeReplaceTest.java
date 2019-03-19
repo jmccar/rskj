@@ -48,7 +48,7 @@ public class CodeReplaceTest {
     public void replaceCodeTest1() throws InterruptedException {
 
         BigInteger nonce = config.getBlockchainConfig().getCommonConstants().getInitialNonce();
-        BlockChainImpl blockchain = org.ethereum.core.ImportLightTest.createBlockchain(GenesisLoader.loadGenesis(config, nonce, getClass().getResourceAsStream("/genesis/genesis-light.json"), false));
+        BlockChainImpl blockchain = org.ethereum.core.ImportLightTest.createBlockchain(GenesisLoader.loadGenesis(nonce, getClass().getResourceAsStream("/genesis/genesis-light.json"), false));
 
         ECKey sender = ECKey.fromPrivate(Hex.decode("3ec771c31cac8c0dba77a69e503765701d3c2bb62435888d4ffa38fed60c445c"));
         System.out.println("address: " + Hex.toHexString(sender.getAddress()));
@@ -72,7 +72,7 @@ public class CodeReplaceTest {
         // Now we can directly check the store and see the new code.
         RskAddress createdContract = tx1.getContractAddress();
         byte[] expectedCode  = Arrays.copyOfRange(code, 12, 12+20);
-        byte[] installedCode = blockchain.getRepository().getContractDetails(createdContract).getCode();
+        byte[] installedCode = blockchain.getRepository().getCode(createdContract);
         // assert the contract has been created
         Assert.assertTrue(Arrays.equals(expectedCode, installedCode));
 
@@ -88,7 +88,7 @@ public class CodeReplaceTest {
         // The second transaction changes the contract code
         Transaction tx2 = createTx(blockchain, sender, tx1.getContractAddress().getBytes(), code2);
         TransactionExecutor executor2 = executeTransaction(blockchain, tx2);
-        byte[] installedCode2 = blockchain.getRepository().getContractDetails(createdContract).getCode();
+        byte[] installedCode2 = blockchain.getRepository().getCode(createdContract);
         // assert the contract code has been created
         Assert.assertTrue(Arrays.equals(installedCode2, code2));
         Assert.assertEquals(1, executor2.getResult().getCodeChanges().size()); // there is one code change
@@ -105,7 +105,7 @@ public class CodeReplaceTest {
         // We test code replacement during initialization: this is forbitten.
 
         BigInteger nonce = config.getBlockchainConfig().getCommonConstants().getInitialNonce();
-        BlockChainImpl blockchain = org.ethereum.core.ImportLightTest.createBlockchain(GenesisLoader.loadGenesis(config, nonce,
+        BlockChainImpl blockchain = org.ethereum.core.ImportLightTest.createBlockchain(GenesisLoader.loadGenesis(nonce,
                 getClass().getResourceAsStream("/genesis/genesis-light.json"), false));
 
         ECKey sender = ECKey.fromPrivate(Hex.decode("3ec771c31cac8c0dba77a69e503765701d3c2bb62435888d4ffa38fed60c445c"));
@@ -133,7 +133,7 @@ public class CodeReplaceTest {
         TestSystemProperties oldConfig = config;
         config = new TestSystemProperties();
         BigInteger nonce = config.getBlockchainConfig().getCommonConstants().getInitialNonce();
-        BlockChainImpl blockchain = org.ethereum.core.ImportLightTest.createBlockchain(GenesisLoader.loadGenesis(config, nonce, getClass().getResourceAsStream("/genesis/genesis-light.json"), false));
+        BlockChainImpl blockchain = org.ethereum.core.ImportLightTest.createBlockchain(GenesisLoader.loadGenesis(nonce, getClass().getResourceAsStream("/genesis/genesis-light.json"), false));
 
         ECKey sender = ECKey.fromPrivate(Hex.decode("3ec771c31cac8c0dba77a69e503765701d3c2bb62435888d4ffa38fed60c445c"));
         System.out.println("address: " + Hex.toHexString(sender.getAddress()));
@@ -157,7 +157,7 @@ public class CodeReplaceTest {
         // Now we can directly check the store and see the new code.
         RskAddress createdContract = tx1.getContractAddress();
         byte[] expectedCode  = Arrays.copyOfRange(code, 12, 12+20);
-        byte[] installedCode = blockchain.getRepository().getContractDetails(createdContract).getCode();
+        byte[] installedCode = blockchain.getRepository().getCode(createdContract);
         // assert the contract has been created
         Assert.assertTrue(Arrays.equals(expectedCode, installedCode));
 

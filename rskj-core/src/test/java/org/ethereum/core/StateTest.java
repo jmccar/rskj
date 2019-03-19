@@ -27,6 +27,7 @@ import co.rsk.crypto.Keccak256;
 import co.rsk.trie.Trie;
 import co.rsk.trie.TrieImpl;
 import org.ethereum.crypto.HashUtil;
+import org.ethereum.util.RskTestFactory;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -132,10 +134,10 @@ public class StateTest {
 
     private Trie generateGenesisState() {
         Trie trie = new TrieImpl();
-        Genesis genesis = (Genesis)Genesis.getInstance(new TestSystemProperties());
+        Genesis genesis = RskTestFactory.getGenesisInstance(new TestSystemProperties());
 
-        for (RskAddress addr : genesis.getPremine().keySet()) {
-            trie = trie.put(addr.getBytes(), genesis.getPremine().get(addr).getAccountState().getEncoded());
+        for (Map.Entry<RskAddress, AccountState> accountsEntry : genesis.getAccounts().entrySet()) {
+            trie.put(accountsEntry.getKey().getBytes(), accountsEntry.getValue().getEncoded());
         }
 
         return trie;

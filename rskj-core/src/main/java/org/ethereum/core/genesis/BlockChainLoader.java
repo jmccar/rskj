@@ -28,8 +28,10 @@ import co.rsk.validators.BlockValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.ethereum.core.*;
 import org.ethereum.db.BlockStore;
+import org.ethereum.db.ContractDetails;
 import org.ethereum.db.ReceiptStore;
 import org.ethereum.listener.EthereumListener;
+import org.ethereum.vm.DataWord;
 import org.ethereum.vm.PrecompiledContracts;
 import org.ethereum.vm.program.invoke.ProgramInvokeFactoryImpl;
 import org.slf4j.Logger;
@@ -38,9 +40,9 @@ import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 import static org.ethereum.crypto.HashUtil.EMPTY_TRIE_HASH;
 
@@ -59,6 +61,7 @@ public class BlockChainLoader {
     private final TransactionPool transactionPool;
     private final EthereumListener listener;
     private final BlockValidator blockValidator;
+    private final Genesis genesis;
 
     @Autowired
     public BlockChainLoader(
@@ -68,7 +71,8 @@ public class BlockChainLoader {
             ReceiptStore receiptStore,
             TransactionPool transactionPool,
             EthereumListener listener,
-            BlockValidator blockValidator) {
+            BlockValidator blockValidator,
+            Genesis genesis) {
 
         this.config = config;
         this.blockStore = blockStore;
@@ -77,6 +81,7 @@ public class BlockChainLoader {
         this.transactionPool = transactionPool;
         this.listener = listener;
         this.blockValidator = blockValidator;
+        this.genesis = genesis;
     }
 
     public BlockChainImpl loadBlockchain() {
@@ -120,40 +125,41 @@ public class BlockChainLoader {
         if (bestBlock == null) {
             logger.info("DB is empty - adding Genesis");
 
-            BigInteger initialNonce = config.getBlockchainConfig().getCommonConstants().getInitialNonce();
-            Genesis genesis = GenesisLoader.loadGenesis(config, config.genesisInfo(), initialNonce, true);
-            for (RskAddress addr : genesis.getPremine().keySet()) {
-                repository.createAccount(addr);
-                InitialAddressState initialAddressState = genesis.getPremine().get(addr);
-                repository.addBalance(addr, initialAddressState.getAccountState().getBalance());
-                AccountState accountState = repository.getAccountState(addr);
-                accountState.setNonce(initialAddressState.getAccountState().getNonce());
+            // first we need to create the accounts, which creates also the associated ContractDetails
+            for (RskAddress accounts : genesis.getAccounts().keySet()) {
+                repository.createAccount(accounts);
+            }
 
-                if (initialAddressState.getContractDetails()!=null) {
-                    repository.updateContractDetails(addr, initialAddressState.getContractDetails());
-                    accountState.setStateRoot(initialAddressState.getAccountState().getStateRoot());
-                    accountState.setCodeHash(initialAddressState.getAccountState().getCodeHash());
+            // second we create contracts whom only have code modifying the preexisting ContractDetails instance
+            for (Map.Entry<RskAddress, byte[]> codeEntry : genesis.getCodes().entrySet()) {
+                RskAddress contractAddress = codeEntry.getKey();
+                ContractDetails contractDetails = repository.getContractDetails(contractAddress);
+                contractDetails.setCode(codeEntry.getValue());
+                Map<DataWord, byte[]> contractStorage = genesis.getStorages().get(contractAddress);
+                for (Map.Entry<DataWord, byte[]> storageEntry : contractStorage.entrySet()) {
+                    contractDetails.putBytes(storageEntry.getKey(), storageEntry.getValue());
                 }
+                repository.updateContractDetails(contractAddress, contractDetails);
+            }
 
-                repository.updateAccountState(addr, accountState);
+            // given the accounts had the proper storage root set from the genesis construction we update the account state
+            for (Map.Entry<RskAddress, AccountState> accountEntry : genesis.getAccounts().entrySet()) {
+                repository.updateAccountState(accountEntry.getKey(), accountEntry.getValue());
             }
 
             genesis.setStateRoot(repository.getRoot());
             genesis.flushRLP();
 
             blockStore.saveBlock(genesis, genesis.getCumulativeDifficulty(), true);
-            blockchain.setBestBlock(genesis);
-            blockchain.setTotalDifficulty(genesis.getCumulativeDifficulty());
+            blockchain.setStatus(genesis, genesis.getCumulativeDifficulty());
 
-            listener.onBlock(genesis, new ArrayList<TransactionReceipt>() );
+            listener.onBlock(genesis, new ArrayList<>() );
             repository.dumpState(genesis, 0, 0, null);
 
             logger.info("Genesis block loaded");
         } else {
             BlockDifficulty totalDifficulty = blockStore.getTotalDifficultyForHash(bestBlock.getHash().getBytes());
-
-            blockchain.setBestBlock(bestBlock);
-            blockchain.setTotalDifficulty(totalDifficulty);
+            blockchain.setStatus(bestBlock, totalDifficulty);
 
             logger.info("*** Loaded up to block [{}] totalDifficulty [{}] with stateRoot [{}]",
                     blockchain.getBestBlock().getNumber(),

@@ -27,6 +27,7 @@ import co.rsk.core.bc.BlockExecutor;
 import co.rsk.core.bc.TransactionPoolImpl;
 import co.rsk.db.RepositoryImpl;
 import co.rsk.db.TrieStorePoolOnMemory;
+import co.rsk.trie.TrieImpl;
 import co.rsk.trie.TrieStore;
 import co.rsk.trie.TrieStoreImpl;
 import co.rsk.validators.DummyBlockValidator;
@@ -43,6 +44,7 @@ import org.ethereum.vm.program.invoke.ProgramInvokeFactoryImpl;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Anton Nashatyrev on 29.12.2015.
@@ -60,7 +62,7 @@ public class ImportLightTest {
         IndexedBlockStore blockStore = new IndexedBlockStore(new HashMap<>(), new HashMapDB(), null);
 
         TrieStore.Pool pool = new TrieStorePoolOnMemory();
-        Repository repository = new RepositoryImpl(new TrieStoreImpl(new HashMapDB()), pool, config.detailsInMemoryStorageLimit());
+        Repository repository = new RepositoryImpl(new TrieImpl(new TrieStoreImpl(new HashMapDB()), true), new HashMapDB(), pool, config.detailsInMemoryStorageLimit());
 
         CompositeEthereumListener listener = new TestCompositeEthereumListener();
 
@@ -107,9 +109,10 @@ public class ImportLightTest {
 
         Repository track = repository.startTracking();
 
-        for (RskAddress addr : genesis.getPremine().keySet()) {
-            track.createAccount(addr);
-            track.addBalance(addr, genesis.getPremine().get(addr).getAccountState().getBalance());
+        for (Map.Entry<RskAddress, AccountState> accountsEntry : genesis.getAccounts().entrySet()) {
+            RskAddress accountAddress = accountsEntry.getKey();
+            track.createAccount(accountAddress);
+            track.addBalance(accountAddress, accountsEntry.getValue().getBalance());
         }
 
         track.commit();
@@ -118,9 +121,7 @@ public class ImportLightTest {
         genesis.flushRLP();
 
         blockStore.saveBlock(genesis, genesis.getCumulativeDifficulty(), true);
-
-        blockchain.setBestBlock(genesis);
-        blockchain.setTotalDifficulty(genesis.getCumulativeDifficulty());
+        blockchain.setStatus(genesis, genesis.getCumulativeDifficulty());
 
         return blockchain;
     }

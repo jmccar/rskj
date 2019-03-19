@@ -18,7 +18,6 @@
 
 package co.rsk.peg.performance;
 
-import co.rsk.bitcoinj.core.BtcECKey;
 import co.rsk.peg.Bridge;
 import co.rsk.peg.BridgeStorageProvider;
 import co.rsk.peg.Federation;
@@ -31,8 +30,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
