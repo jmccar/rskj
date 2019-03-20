@@ -73,7 +73,7 @@ public class CommonConfig {
         return new MutableRepository(new MutableTrieCache(new MutableTrieImpl(new Trie(new TrieStoreImpl(ds), true))));
     }
 
-    private KeyValueDataSource makeDataSource(String name, String databaseDir) {
+    public KeyValueDataSource makeDataSource(String name, String databaseDir) {
         KeyValueDataSource ds = new LevelDbDataSource(name, databaseDir);
         ds.init();
         return ds;
